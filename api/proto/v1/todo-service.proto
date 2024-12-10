@@ -27,72 +27,58 @@ message ToDo {
 
 // request data for creating a new task
 message CreateRequest {
-    // API version, a best-practice to specify version explicitly
-    string api = 1;
-
     // task to create
-    ToDo todo = 2;
+    ToDo todo = 1;
 }
 
 // response data for creating a new task
 message CreateResponse {
-    // API version, a best-practice to specify version explicitly
-    string api = 1;
-
     // id of the created task
-    int64 id = 2;
+    int64 id = 1;
 }
 
 // request data for reading an existing task
 message ReadRequest {
-    string api = 1;
     // id of the task to read
-    int64 id = 2;
+    int64 id = 1;
 }
 
 // response data for reading an existing task containing the task data specified by the id back in request
 message ReadResponse {
-    string api = 1;
     // task data read by the id
-    ToDo todo = 2;
+    ToDo todo = 1;
 }
 
 // request data for updating an existing task
 message UpdateRequest {
-    string api = 1;
     // task to update
-    ToDo todo = 2;
+    ToDo todo = 1;
 }
 
 // response data for updating an existing task containing the status of the update operation
 message UpdateResponse {
-    string api = 1;
     // status of the update operation
-    bool updated = 2;
+    bool updated = 1;
 }
 
 // request data for deleting an existing task
 message DeleteRequest {
-    string api = 1;
     // id of the task to delete
-    int64 id = 2;
+    int64 id = 1;
 }
 
 // response data for deleting an existing task containing the status of the delete operation
 message DeleteResponse {
-    string api = 1;
     // status of the delete operation
-    bool deleted = 2;
+    bool deleted = 1;
 }
 
 // request data for listing all tasks
 message ReadAllRequest {
-    string api = 1;
 }
 
 // response data for listing all tasks containing the list of tasks
 message ReadAllResponse {
-    string api = 1;
     // list of tasks
     repeated ToDo todos = 2;
 }
