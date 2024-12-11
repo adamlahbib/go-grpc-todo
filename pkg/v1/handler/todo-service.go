@@ -7,6 +7,7 @@ import (
 	pb "github.com/adamlahbib/go-grpc-todo/api/proto/v1"
 	"github.com/adamlahbib/go-grpc-todo/internal/models"
 	interfaces "github.com/adamlahbib/go-grpc-todo/pkg/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -17,11 +18,12 @@ type TodoServiceServer struct {
 	pb.UnimplementedToDoServiceServer
 }
 
-func NewTodoServiceServer(useCase interfaces.UseCaseInterface) *TodoServiceServer {
-	return &TodoServiceServer{useCase: useCase}
+func NewTodoServiceServer(grpcServer *grpc.Server, useCase interfaces.UseCaseInterface) {
+	todoGrpc := &TodoServiceServer{useCase: useCase}
+	pb.RegisterToDoServiceServer(grpcServer, todoGrpc)
 }
 
-func (s TodoServiceServer) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateResponse, error) {
+func (s *TodoServiceServer) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateResponse, error) {
 	// convert the deadline to a go time.Time
 	deadline := req.GetTodo().GetDeadline() // Assuming deadline is of type *timestamppb.Timestamp
 	if deadline == nil {
@@ -52,11 +54,11 @@ func (s TodoServiceServer) Create(ctx context.Context, req *pb.CreateRequest) (*
 
 	// convert the created todo to a CreateResponse
 	return &pb.CreateResponse{
-		Id: int64(createdTodo.ID),
+		Id: int64(createdTodo.Id),
 	}, nil
 }
 
-func (s TodoServiceServer) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadResponse, error) {
+func (s *TodoServiceServer) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadResponse, error) {
 	// check if the id is provided
 	if req.GetId() == 0 {
 		return &pb.ReadResponse{}, errors.New("id is required")
@@ -74,7 +76,7 @@ func (s TodoServiceServer) Read(ctx context.Context, req *pb.ReadRequest) (*pb.R
 	// convert the todo to a ReadResponse
 	return &pb.ReadResponse{
 		Todo: &pb.ToDo{
-			Id:          int64(todo.ID),
+			Id:          int64(todo.Id),
 			Title:       todo.Title,
 			Description: todo.Description,
 			Deadline:    deadline,
@@ -82,7 +84,7 @@ func (s TodoServiceServer) Read(ctx context.Context, req *pb.ReadRequest) (*pb.R
 	}, nil
 }
 
-func (s TodoServiceServer) Update(ctx context.Context, req *pb.UpdateRequest) (*pb.UpdateResponse, error) {
+func (s *TodoServiceServer) Update(ctx context.Context, req *pb.UpdateRequest) (*pb.UpdateResponse, error) {
 	if req.GetTodo().GetId() == 0 {
 		return nil, status.Error(codes.InvalidArgument, "id field is missing")
 	}
@@ -116,7 +118,7 @@ func (s TodoServiceServer) Update(ctx context.Context, req *pb.UpdateRequest) (*
 	}, nil
 }
 
-func (s TodoServiceServer) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+func (s *TodoServiceServer) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
 	if req.GetId() == 0 {
 		return nil, status.Error(codes.InvalidArgument, "id field is missing")
 	}
@@ -133,7 +135,7 @@ func (s TodoServiceServer) Delete(ctx context.Context, req *pb.DeleteRequest) (*
 	}, nil
 }
 
-func (s TodoServiceServer) ReadAll(ctx context.Context, req *pb.ReadAllRequest) (*pb.ReadAllResponse, error) {
+func (s *TodoServiceServer) ReadAll(ctx context.Context, req *pb.ReadAllRequest) (*pb.ReadAllResponse, error) {
 	// read all todos using the usecase
 	todos, err := s.useCase.GetAll()
 	if err != nil {
@@ -144,7 +146,7 @@ func (s TodoServiceServer) ReadAll(ctx context.Context, req *pb.ReadAllRequest) 
 	var pbTodos []*pb.ToDo
 	for _, todo := range todos {
 		pbTodos = append(pbTodos, &pb.ToDo{
-			Id:          int64(todo.ID),
+			Id:          int64(todo.Id),
 			Title:       todo.Title,
 			Description: todo.Description,
 			Deadline:    timestamppb.New(todo.Deadline),

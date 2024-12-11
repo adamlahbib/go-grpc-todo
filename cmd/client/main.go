@@ -52,6 +52,8 @@ func main() {
 	log.Printf("Create result: <%+v>\n\n", res1)
 	_id := res1.GetId()
 
+	log.Printf("Created todo with id: %d\n\n", _id)
+
 	// read the created todo
 	req2 := &pb.ReadRequest{
 		Id: _id,

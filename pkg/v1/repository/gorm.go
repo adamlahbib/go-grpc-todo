@@ -25,7 +25,7 @@ func (r *Repo) Get(id int) (models.Todo, error) {
 
 func (r *Repo) Update(updatedTodo models.Todo) error {
 	var todo models.Todo
-	if err := r.db.First(&todo, updatedTodo.ID).Error; err != nil {
+	if err := r.db.First(&todo, updatedTodo.Id).Error; err != nil {
 		return err // record not found
 	}
 	todo.Title = updatedTodo.Title

@@ -7,12 +7,14 @@ import (
 	"os"
 	"os/signal"
 
-	pb "github.com/adamlahbib/go-grpc-todo/api/proto/v1"
-	handler "github.com/adamlahbib/go-grpc-todo/pkg/v1/handler"
+	"github.com/adamlahbib/go-grpc-todo/pkg/v1/handler"
+	repo "github.com/adamlahbib/go-grpc-todo/pkg/v1/repository"
+	"github.com/adamlahbib/go-grpc-todo/pkg/v1/usecase"
 	"google.golang.org/grpc"
+	"gorm.io/gorm"
 )
 
-func InitiateServer(ctx context.Context, api handler.TodoServiceServer, port string) error {
+func InitiateServer(ctx context.Context, db *gorm.DB, port string) error {
 	// create a listener
 	listen, err := net.Listen("tcp", ":"+port)
 	if err != nil {
@@ -21,7 +23,7 @@ func InitiateServer(ctx context.Context, api handler.TodoServiceServer, port str
 
 	// register service
 	server := grpc.NewServer()
-	pb.RegisterToDoServiceServer(server, api)
+	handler.NewTodoServiceServer(server, usecase.New(repo.New(db)))
 
 	// graceful shutdown implementation
 	c := make(chan os.Signal, 1)   // create a channel to listen for signals
