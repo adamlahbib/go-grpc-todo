@@ -3,14 +3,68 @@ syntax = "proto3";
 option go_package = "./v1";
 
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info: {
+        title: "ToDo Service";
+        version: "1.0";
+        contact: {
+            name: "ToDo Service";
+            url: "https://github.com/adamlahbib/go-grpc-todo";
+            email: "contact@adamlahbib.me"
+        };
+    };
+    schemes: HTTP;
+    consumes: "application/json";
+    produces: "application/json";
+    responses: {
+        key: "404";
+        value: {
+            description: "Returned when the resource is not found.";
+            schema: {
+                json_schema: {
+                    type: STRING;
+                }
+            }
+        }
+    }
+};
 
 // service for managing tasks
 service ToDoService {
-    rpc Create(CreateRequest) returns (CreateResponse);
-    rpc Read(ReadRequest) returns (ReadResponse);
-    rpc Update(UpdateRequest) returns (UpdateResponse);
-    rpc Delete(DeleteRequest) returns (DeleteResponse);
-    rpc ReadAll(ReadAllRequest) returns (ReadAllResponse);
+    rpc ReadAll(ReadAllRequest) returns (ReadAllResponse) {
+        option (google.api.http) = {
+            get: "/v1/todo/all";
+        };
+    };
+    rpc Create(CreateRequest) returns (CreateResponse) {
+        option (google.api.http) = {
+            post: "/v1/todo";
+            body: "*";
+        };
+    };
+    rpc Read(ReadRequest) returns (ReadResponse) {
+        option (google.api.http) = {
+            get: "/v1/todo/{id}";
+        };
+    };
+    rpc Update(UpdateRequest) returns (UpdateResponse) {
+        option (google.api.http) = {
+            put: "/v1/todo/{todo.id}";
+            body: "*";
+            additional_bindings {
+                patch: "/v1/todo/{todo.id}";
+                body: "*";
+            }
+        };
+    };
+    rpc Delete(DeleteRequest) returns (DeleteResponse) {
+        option (google.api.http) = {
+            delete: "/v1/todo/{id}";
+        };
+    };
 }
 
 // tasks we need to do

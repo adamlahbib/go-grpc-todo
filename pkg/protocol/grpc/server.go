@@ -30,7 +30,7 @@ func InitiateServer(ctx context.Context, db *gorm.DB, port string) error {
 	signal.Notify(c, os.Interrupt) // notify the channel when an interrupt signal is received
 
 	go func() {
-		for range c {
+		for range c { // loop through the channel to receive signals
 			// signal is ctrl+c, handle the shutdown
 			log.Println("shutting down the gRPC server")
 			server.GracefulStop()

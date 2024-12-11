@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	pb "github.com/adamlahbib/go-grpc-todo/api/proto/v1"
 	"github.com/adamlahbib/go-grpc-todo/internal/models"
+	pb "github.com/adamlahbib/go-grpc-todo/pkg/api/v1"
 	interfaces "github.com/adamlahbib/go-grpc-todo/pkg/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

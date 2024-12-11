@@ -7,6 +7,7 @@ import (
 	dbConfig "github.com/adamlahbib/go-grpc-todo/internal/db"
 	"github.com/adamlahbib/go-grpc-todo/internal/models"
 	server "github.com/adamlahbib/go-grpc-todo/pkg/protocol/grpc"
+	"github.com/adamlahbib/go-grpc-todo/pkg/protocol/rest"
 )
 
 func main() {
@@ -18,6 +19,10 @@ func main() {
 	if err := db.AutoMigrate(&models.Todo{}); err != nil {
 		log.Fatalf("failed to migrate database: %v", err)
 	}
+
+	go func() {
+		_ = rest.InitiateServer(context.Background(), ":8080", ":5000")
+	}()
 
 	if err := server.InitiateServer(
 		context.Background(),

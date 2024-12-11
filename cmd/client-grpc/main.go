@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/adamlahbib/go-grpc-todo/api/proto/v1"
+	pb "github.com/adamlahbib/go-grpc-todo/pkg/api/v1"
 	lorem "github.com/derektata/lorem/ipsum"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
